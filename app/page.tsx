@@ -4,8 +4,15 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, ChevronDown, CheckCircle, Activity, Users, ExternalLink } from 'lucide-react';
 
-// ИСПРАВЛЕННЫЙ КОМПОНЕНТ СЧЕТЧИКА (Решает ошибку Hydration)
-const Counter = ({ end, duration = 2000, suffix = "", prefix = "", decimals = 0 }) => {
+interface CounterProps {
+  end: number;
+  duration?: number;
+  suffix?: string;
+  prefix?: string;
+  decimals?: number;
+}
+
+const Counter = ({ end, duration = 2000, suffix = "", prefix = "", decimals = 0 }: CounterProps) => {
   const [count, setCount] = useState(0);
   const [mounted, setMounted] = useState(false);
 
