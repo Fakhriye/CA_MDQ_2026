@@ -48,8 +48,7 @@ const Counter = ({ end, duration = 2000, suffix = "", prefix = "", decimals = 0 
 
 export default function Home() {
   const [scoredCard, setScoredCard] = useState<string | null>(null);
-  const [expandedModel, setExpandedModel] = useState(null);
-
+  const [expandedModel, setExpandedModel] = useState<number | null>(null);
   const models = [
     { id: 1, name: "Logistic Regression", auc: "0.850", f1: "0.812", role: "Baseline", desc: "Простая линейная модель. Не справляется со сложными нелинейными связями транзакций." },
     { id: 2, name: "Random Forest", auc: "0.940", f1: "0.910", role: "Strong", desc: "Ансамбль деревьев. Хорошо ловит паттерны, но склонен к переобучению на дисбалансе." },
