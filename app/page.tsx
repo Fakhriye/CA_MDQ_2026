@@ -1,65 +1,287 @@
-import Image from "next/image";
+"use client";
+
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Download, ChevronDown, CheckCircle, Activity, Users, ExternalLink } from 'lucide-react';
+
+// ИСПРАВЛЕННЫЙ КОМПОНЕНТ СЧЕТЧИКА (Решает ошибку Hydration)
+const Counter = ({ end, duration = 2000, suffix = "", prefix = "", decimals = 0 }) => {
+  const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    let start = 0;
+    const increment = end / (duration / 16);
+    const timer = setInterval(() => {
+      start += increment;
+      if (start >= end) {
+        setCount(end);
+        clearInterval(timer);
+      } else {
+        setCount(start);
+      }
+    }, 16);
+    return () => clearInterval(timer);
+  }, [end, duration]);
+
+  // Во время рендера на сервере отдаем статичное значение
+  if (!mounted) {
+    const initialZero = decimals > 0 ? "0." + "0".repeat(decimals) : "0";
+    return <span>{prefix}{initialZero}{suffix}</span>;
+  }
+
+  // На клиенте отдаем анимированное значение с нужным форматом
+  const formattedCount = decimals > 0 
+    ? count.toFixed(decimals) 
+    : Math.floor(count).toLocaleString('ru-RU');
+
+  return <span>{prefix}{formattedCount}{suffix}</span>;
+};
 
 export default function Home() {
+  const [scoredCard, setScoredCard] = useState(null);
+  const [expandedModel, setExpandedModel] = useState(null);
+
+  const models = [
+    { id: 1, name: "Logistic Regression", auc: "0.850", f1: "0.812", role: "Baseline", desc: "Простая линейная модель. Не справляется со сложными нелинейными связями транзакций." },
+    { id: 2, name: "Random Forest", auc: "0.940", f1: "0.910", role: "Strong", desc: "Ансамбль деревьев. Хорошо ловит паттерны, но склонен к переобучению на дисбалансе." },
+    { id: 3, name: "LightGBM", auc: "0.985", f1: "0.970", role: "Strong", desc: "Быстрый градиентный бустинг, показал отличные результаты, но чуть хуже калибруется." },
+    { id: 4, name: "XGBoost + Platt Scaling", auc: "1.000", f1: "0.9998", role: "Winner", highlight: true, desc: "Победитель. Идеально справляется с One-Class спецификой задачи. Platt Scaling обеспечивает точную выдачу вероятностей (Continuous Score), а не грубых меток." },
+  ];
+
+  const platformLayers = [
+    { id: "L1", title: "Data Ingestion & Feature Eng", desc: "Агрегация транзакций, расчет 28 фичей (RFM, Time-based, HHI)." },
+    { id: "L2", title: "AI Scoring Engine", current: true, desc: "Ядро нашего проекта. XGBoost модель оценивает вероятность скрытого бизнеса для каждой карты." },
+    { id: "L3", title: "Decision Engine", desc: "Hot/Warm/Cold сегментация и автоматический подбор оффера (Acquiring, SaaS, Credit)." },
+    { id: "L4", title: "Consulting & Monetisation", desc: "Стратегия go-to-market для банков-партнеров Mastercard." },
+  ];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="relative">
+      {/* HEADER / NAVBAR */}
+      <header className="fixed top-0 w-full z-50 bg-mcNavy/90 backdrop-blur-md border-b border-white/10 text-white">
+        <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex">
+              <div className="w-8 h-8 rounded-full bg-mcOrange mix-blend-screen translate-x-3"></div>
+              <div className="w-8 h-8 rounded-full bg-yellow-500 mix-blend-screen -translate-x-3"></div>
+            </div>
+            <span className="font-syne font-bold text-xl tracking-tight">Data Quest 2026</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-8 font-medium">
+            <a href="#solution" className="hover:text-mcOrange transition-colors">Решение</a>
+            <a href="#team" className="hover:text-mcOrange transition-colors">О нас</a>
+            <a href="/MDQ_2026_Slides.pdf" download className="bg-mcOrange text-white px-5 py-2.5 rounded-full flex items-center gap-2 hover:bg-orange-600 transition-all hover:-translate-y-1">
+              <Download size={18} />
+              Презентация
+            </a>
+          </nav>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      {/* COMPONENT 1: HERO SECTION */}
+      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-mcNavy text-white overflow-hidden" id="solution">
+        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#EB5A1E 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <span className="inline-block py-1 px-3 rounded-full border border-mcOrange/50 text-mcOrange text-sm font-mono mb-6">Student Project / Almaty Hub</span>
+            <h1 className="font-syne text-5xl md:text-7xl font-bold leading-tight mb-6">
+              Выявление <span className="text-mcOrange">скрытой</span><br />
+              коммерческой активности
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mb-12">
+              AI-платформа для детектирования скрытых предпринимателей среди физических лиц. Единица предсказания — карта, а не транзакция.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { end: 13000000, label: "Транзакций проанализировано", suffix: "+" },
+              { end: 0.9998, label: "F1 Score на синтетике", decimals: 4 },
+              { end: 216000, label: "Годовая прибыль банка", prefix: "$" }
+            ].map((stat, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }} 
+                className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:-translate-y-2 transition-transform">
+                <div className="font-syne text-4xl font-bold text-mcOrange mb-2">
+                  <Counter end={stat.end} suffix={stat.suffix} prefix={stat.prefix} decimals={stat.decimals || 0} />
+                </div>
+                <div className="text-gray-400 font-medium">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+
+      {/* COMPONENT 2: THE PROBLEM & INTERACTIVE SHAP */}
+      <section className="py-24 bg-mcLight">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="font-syne text-4xl font-bold mb-6 text-mcNavy">Проблема невидимого бизнеса</h2>
+              <p className="text-gray-600 mb-6 text-lg">
+                Самозанятые используют потребительские карты для ведения бизнеса. Банк теряет Interchange fee и упускает возможности кросс-продаж (эквайринг, кредиты).
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3"><CheckCircle className="text-mcTeal mt-1" size={20}/> <span>Сложность: нет готовых меток (PU Learning).</span></li>
+                <li className="flex items-start gap-3"><CheckCircle className="text-mcTeal mt-1" size={20}/> <span>Решение: Continuous Score для каждой карты.</span></li>
+              </ul>
+            </motion.div>
+
+            {/* Interactive Demo */}
+            <motion.div className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100"
+              initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="font-syne font-bold text-xl">Live Demo: Card Scoring</h3>
+                <Activity className="text-mcOrange" />
+              </div>
+              
+              {!scoredCard ? (
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-xl hover:border-mcOrange cursor-pointer transition-colors" onClick={() => setScoredCard('business')}>
+                    <div className="font-mono text-sm text-gray-500">CARD_****4821</div>
+                    <div className="font-bold">Потенциальный B2B паттерн</div>
+                    <div className="text-sm text-gray-600 mt-2">Высокий оборот, концентрация мерчантов</div>
+                    <button className="mt-4 w-full bg-mcNavy text-white py-2 rounded-lg font-medium">Score this card</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="animate-in fade-in zoom-in duration-500">
+                  <div className="flex justify-between mb-4 pb-4 border-b">
+                    <div>
+                      <div className="text-sm text-gray-500">Predicted Label</div>
+                      <div className="font-bold text-mcOrange text-xl">HOT LEAD (Business)</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">Final Score</div>
+                      <div className="font-bold font-mono text-xl text-mcNavy">0.942</div>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3 mt-6">
+                    <h4 className="font-medium text-sm text-gray-500 mb-4">SHAP Feature Contributions</h4>
+                    {[
+                      { name: 'pct_biz_mcc', val: '+0.41', width: '85%', text: 'Транзакции в бизнес-категориях' },
+                      { name: 'cv_amount', val: '+0.28', width: '65%', text: 'Аномальная вариативность сумм' },
+                      { name: 'n_unique_merchants', val: '+0.15', width: '40%', text: 'Низкая концентрация трат' },
+                    ].map((feat, i) => (
+                      <div key={i} className="relative">
+                        <div className="flex justify-between text-sm mb-1">
+                          <code className="text-mcTeal">{feat.name}</code>
+                          <span className="font-mono font-bold">{feat.val}</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-mcOrange h-2 rounded-full" style={{ width: feat.width }}></div>
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">{feat.text}</div>
+                      </div>
+                    ))}
+                    <button onClick={() => setScoredCard(null)} className="mt-6 text-sm text-mcNavy underline">Reset demo</button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPONENT 3 & 4: ML SOLUTION & PLATFORM LAYERS */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-syne text-4xl font-bold text-mcNavy mb-4">Архитектура Платформы</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">От сырых данных к бизнес-решениям через 4 слоя интеллекта.</p>
+          </div>
+
+          <div className="grid md:grid-cols-4 gap-4 mb-24">
+            {platformLayers.map((layer, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className={`p-6 rounded-2xl border-2 transition-all hover:-translate-y-2 ${layer.current ? 'border-mcOrange bg-orange-50/50' : 'border-gray-100'}`}>
+                <div className="font-syne text-2xl font-bold text-gray-300 mb-4">{layer.id}</div>
+                <h3 className="font-bold text-lg mb-2">{layer.title}</h3>
+                <p className="text-sm text-gray-600">{layer.desc}</p>
+                {layer.current && <span className="inline-block mt-4 bg-mcOrange text-white text-xs px-3 py-1 rounded-full">Наш фокус в кейсе</span>}
+              </motion.div>
+            ))}
+          </div>
+
+          <h3 className="font-syne text-3xl font-bold text-mcNavy mb-8">Сравнение ML Моделей</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="grid grid-cols-4 bg-gray-50 p-4 font-medium text-gray-500 border-b">
+              <div className="col-span-2">Модель</div>
+              <div>AUC-ROC</div>
+              <div>F1 Score</div>
+            </div>
+            {models.map((model) => (
+              <div key={model.id} className="border-b last:border-0">
+                <div 
+                  className={`grid grid-cols-4 p-4 cursor-pointer items-center transition-colors ${model.highlight ? 'bg-orange-50/30' : 'hover:bg-gray-50'}`}
+                  onClick={() => setExpandedModel(expandedModel === model.id ? null : model.id)}
+                >
+                  <div className="col-span-2 flex items-center gap-3">
+                    {model.highlight && <div className="w-2 h-2 rounded-full bg-mcOrange"></div>}
+                    <span className={`font-bold ${model.highlight ? 'text-mcOrange' : 'text-mcNavy'}`}>{model.name}</span>
+                  </div>
+                  <div className="font-mono">{model.auc}</div>
+                  <div className="flex justify-between items-center font-mono">
+                    {model.f1}
+                    <ChevronDown className={`transition-transform ${expandedModel === model.id ? 'rotate-180' : ''}`} size={18}/>
+                  </div>
+                </div>
+                <AnimatePresence>
+                  {expandedModel === model.id && (
+                    <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden bg-gray-50">
+                      <div className="p-6 text-sm text-gray-700 font-medium">
+                        {model.desc}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* COMPONENT 5: TEAM */}
+      <section className="py-24 bg-mcNavy text-white" id="team">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/10 pb-8">
+            <div>
+              <h2 className="font-syne text-4xl font-bold mb-4">Наша команда</h2>
+              <p className="text-gray-400">Студенческий проект для Mastercard Data Quest 2026</p>
+            </div>
+            <div className="flex gap-4 mt-6 md:mt-0">
+              <a href="#" className="flex items-center gap-2 text-sm bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg transition-colors">
+                <ExternalLink size={16} /> GitHub Репозиторий
+              </a>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { role: "Data Scientist", desc: "Разработка архитектуры XGBoost и Feature Engineering." },
+              { role: "Business Analyst", desc: "Оценка финансового эффекта, презентация бизнес-метрик." },
+              { role: "Product Manager", desc: "Концепция платформы, дизайн структуры продукта." },
+            ].map((member, i) => (
+              <div key={i} className="bg-white/5 p-8 rounded-2xl border border-white/10 hover:-translate-y-2 transition-transform">
+                <div className="w-16 h-16 bg-gradient-to-br from-mcOrange to-mcTeal rounded-full mb-6 flex items-center justify-center">
+                  <Users size={28} className="text-white" />
+                </div>
+                <h3 className="font-syne text-xl font-bold mb-2">Участник {i + 1}</h3>
+                <p className="text-mcOrange text-sm mb-4">{member.role}</p>
+                <p className="text-gray-400 text-sm">{member.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-[#060d18] text-gray-500 py-8 text-center text-sm">
+        <p>Disclaimer: This is a student project for Mastercard Data Quest 2026. All data used is synthetic.</p>
+      </footer>
+    </main>
   );
 }
