@@ -75,12 +75,26 @@ export default function Home() {
       {/* HEADER / NAVBAR */}
       <header className="fixed top-0 w-full z-50 bg-mcNavy/90 backdrop-blur-md border-b border-white/10 text-white">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex">
-              <div className="w-8 h-8 rounded-full bg-mcOrange mix-blend-screen translate-x-3"></div>
-              <div className="w-8 h-8 rounded-full bg-yellow-500 mix-blend-screen -translate-x-3"></div>
-            </div>
-            <span className="font-syne font-bold text-xl tracking-tight">Data Quest 2026</span>
+          <div className="flex items-center gap-4">
+            {/* Логотип Mastercard */}
+            <img 
+              src="/Mastercard-credit-card-Logo.png" 
+              alt="Mastercard" 
+              className="h-8 md:h-10 object-contain"
+            />
+            
+            <div className="w-px h-8 bg-white/20 hidden sm:block"></div>
+            
+            {/* Логотип AIESEC */}
+            <img 
+              src="/powered-by-White-Black.png" 
+              alt="AIESEC" 
+              className="h-6 md:h-8 object-contain"
+            />
+            
+            <span className="font-syne font-bold text-xl tracking-tight ml-2 hidden lg:block">
+              Data Quest 2026
+            </span>
           </div>
           <nav className="hidden md:flex items-center gap-8 font-medium">
             <a href="#solution" className="hover:text-mcOrange transition-colors">Решение</a>
@@ -245,7 +259,11 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="bg-[#060d18] text-gray-500 py-8 text-center text-sm">
+      <footer className="bg-[#060d18] text-gray-500 py-12 text-center text-sm border-t border-white/5">
+        <div className="flex justify-center items-center gap-6 mb-6 opacity-50 grayscale">
+          <img src="/Mastercard-credit-card-Logo.png" alt="Mastercard" className="h-6 object-contain" />
+          <img src="/powered-by-White-Black.png" alt="AIESEC" className="h-5 object-contain" />
+        </div>
         <p>Disclaimer: This is a student project for Mastercard Data Quest 2026.</p>
       </footer>
     </main>
