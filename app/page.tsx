@@ -62,13 +62,12 @@ export default function Home() {
     { id: "L4", title: "Consulting & Monetisation", desc: "Стратегия go-to-market для банков-партнеров Mastercard." },
   ];
 
-  // Массив участников теперь объявлен ПЕРЕД return
   const teamMembers = [
-    { name: "Имя Фамилия 1", role: "Data Scientist", desc: "Описание 1", img: "/member1.jpg" },
-    { name: "Имя Фамилия 2", role: "Business Analyst", desc: "Описание 2", img: "/member2.jpg" },
-    { name: "Имя Фамилия 3", role: "Product Manager", desc: "Описание 3", img: "/member3.jpg" },
-    { name: "Имя Фамилия 4", role: "Data Engineer", desc: "Описание 4", img: "/member4.jpg" },
-    { name: "Имя Фамилия 5", role: "UX/UI Designer", desc: "Описание 5", img: "/member5.jpg" },
+    { name: "Имя 1", role: "Data Scientist", desc: "Описание участника 1", img: "/member1.jpg" },
+    { name: "Имя 2", role: "Business Analyst", desc: "Описание участника 2", img: "/member2.jpg" },
+    { name: "Имя 3", role: "Product Manager", desc: "Описание участника 3", img: "/member3.jpg" },
+    { name: "Имя 4", role: "Data Engineer", desc: "Описание участника 4", img: "/member4.jpg" },
+    { name: "Имя 5", role: "UX/UI Designer", desc: "Описание участника 5", img: "/member5.jpg" },
   ];
 
   return (
@@ -94,7 +93,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* HERO SECTION */}
+      {/* COMPONENT 1: HERO SECTION */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 bg-mcNavy text-white overflow-hidden" id="solution">
         <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'radial-gradient(#EB5A1E 1px, transparent 1px)', backgroundSize: '40px 40px' }}></div>
         <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -104,35 +103,139 @@ export default function Home() {
               Выявление <span className="text-mcOrange">скрытой</span><br />
               коммерческой активности
             </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mb-12">
+              AI-платформа для детектирования скрытых предпринимателей среди физических лиц. Единица предсказания — карта, а не транзакция.
+            </p>
           </motion.div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             {[
+            {[
               { end: 13000000, label: "Транзакций проанализировано", suffix: "+" },
               { end: 0.9998, label: "F1 Score на синтетике", decimals: 4 },
               { end: 216000, label: "Годовая прибыль банка", prefix: "$" }
             ].map((stat, i) => (
-              <div key={i} className="bg-white/5 border border-white/10 p-8 rounded-2xl">
-                 <Counter end={stat.end} suffix={stat.suffix} prefix={stat.prefix} decimals={stat.decimals || 0} />
-                 <div className="text-gray-400 font-medium">{stat.label}</div>
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }} 
+                className="bg-white/5 border border-white/10 p-8 rounded-2xl hover:-translate-y-2 transition-transform">
+                <div className="font-syne text-4xl font-bold text-mcOrange mb-2">
+                  <Counter end={stat.end} suffix={stat.suffix} prefix={stat.prefix} decimals={stat.decimals || 0} />
+                </div>
+                <div className="text-gray-400 font-medium">{stat.label}</div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* COMPONENT 2: THE PROBLEM & INTERACTIVE SHAP */}
+      <section className="py-24 bg-mcLight">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h2 className="font-syne text-4xl font-bold mb-6 text-mcNavy">Проблема невидимого бизнеса</h2>
+              <p className="text-gray-600 mb-6 text-lg">
+                Самозанятые используют потребительские карты для ведения бизнеса. Банк теряет Interchange fee и упускает возможности кросс-продаж (эквайринг, кредиты).
+              </p>
+              <ul className="space-y-4 mb-8">
+                <li className="flex items-start gap-3"><CheckCircle className="text-mcTeal mt-1" size={20}/> <span>Сложность: нет готовых меток (PU Learning).</span></li>
+                <li className="flex items-start gap-3"><CheckCircle className="text-mcTeal mt-1" size={20}/> <span>Решение: Continuous Score для каждой карты.</span></li>
+              </ul>
+            </motion.div>
+
+            <motion.div className="bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100"
+              initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="font-syne font-bold text-xl">Live Demo: Card Scoring</h3>
+                <Activity className="text-mcOrange" />
+              </div>
+              {!scoredCard ? (
+                <div className="space-y-4">
+                  <div className="p-4 border rounded-xl hover:border-mcOrange cursor-pointer transition-colors" onClick={() => setScoredCard('business')}>
+                    <div className="font-mono text-sm text-gray-500">CARD_****4821</div>
+                    <div className="font-bold">Потенциальный B2B паттерн</div>
+                    <div className="text-sm text-gray-600 mt-2">Высокий оборот, концентрация мерчантов</div>
+                    <button className="mt-4 w-full bg-mcNavy text-white py-2 rounded-lg font-medium">Score this card</button>
+                  </div>
+                </div>
+              ) : (
+                <div className="animate-in fade-in zoom-in duration-500">
+                  <div className="flex justify-between mb-4 pb-4 border-b">
+                    <div>
+                      <div className="text-sm text-gray-500">Predicted Label</div>
+                      <div className="font-bold text-mcOrange text-xl">HOT LEAD (Business)</div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-sm text-gray-500">Final Score</div>
+                      <div className="font-bold font-mono text-xl text-mcNavy">0.942</div>
+                    </div>
+                  </div>
+                  <div className="space-y-3 mt-6">
+                    <h4 className="font-medium text-sm text-gray-500 mb-4">SHAP Feature Contributions</h4>
+                    {[
+                      { name: 'pct_biz_mcc', val: '+0.41', width: '85%', text: 'Транзакции в бизнес-категориях' },
+                      { name: 'cv_amount', val: '+0.28', width: '65%', text: 'Аномальная вариативность сумм' },
+                      { name: 'n_unique_merchants', val: '+0.15', width: '40%', text: 'Низкая концентрация трат' },
+                    ].map((feat, i) => (
+                      <div key={i} className="relative">
+                        <div className="flex justify-between text-sm mb-1">
+                          <code className="text-mcTeal">{feat.name}</code>
+                          <span className="font-mono font-bold">{feat.val}</span>
+                        </div>
+                        <div className="w-full bg-gray-100 rounded-full h-2">
+                          <div className="bg-mcOrange h-2 rounded-full" style={{ width: feat.width }}></div>
+                        </div>
+                        <div className="text-xs text-gray-400 mt-1">{feat.text}</div>
+                      </div>
+                    ))}
+                    <button onClick={() => setScoredCard(null)} className="mt-6 text-sm text-mcNavy underline">Reset demo</button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* COMPONENT 3 & 4: ML SOLUTION & LAYERS */}
+      <section className="py-24 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-syne text-4xl font-bold text-mcNavy mb-4">Архитектура Платформы</h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">От сырых данных к бизнес-решениям через 4 слоя интеллекта.</p>
+          </div>
+          <div className="grid md:grid-cols-4 gap-4 mb-24">
+            {platformLayers.map((layer, i) => (
+              <motion.div key={i} className={`p-6 rounded-2xl border-2 ${layer.current ? 'border-mcOrange bg-orange-50/50' : 'border-gray-100'}`}>
+                <div className="font-syne text-2xl font-bold text-gray-300 mb-4">{layer.id}</div>
+                <h3 className="font-bold text-lg mb-2">{layer.title}</h3>
+                <p className="text-sm text-gray-600">{layer.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <h3 className="font-syne text-3xl font-bold text-mcNavy mb-8">Сравнение ML Моделей</h3>
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+            {models.map((model) => (
+              <div key={model.id} className="border-b">
+                <div className={`grid grid-cols-4 p-4 cursor-pointer`} onClick={() => setExpandedModel(expandedModel === model.id ? null : model.id)}>
+                   <div className="col-span-2 font-bold">{model.name}</div>
+                   <div className="font-mono">{model.auc}</div>
+                   <div className="flex justify-between">{model.f1}<ChevronDown /></div>
+                </div>
+                {expandedModel === model.id && <div className="p-6 text-sm bg-gray-50">{model.desc}</div>}
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* TEAM SECTION */}
+      {/* COMPONENT 5: TEAM SECTION */}
       <section className="py-24 bg-mcNavy text-white" id="team">
         <div className="max-w-7xl mx-auto px-6">
           <h2 className="font-syne text-4xl font-bold mb-16">Наша команда</h2>
-          {/* Вот здесь мы используем массив через {} */}
           <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-5 gap-6 mt-10">
             {teamMembers.map((member, index) => (
               <div key={index} className="bg-slate-800 p-6 rounded-xl border border-slate-700 flex flex-col items-center text-center">
-                <img 
-                  src={member.img} 
-                  alt={member.name} 
-                  className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-orange-500"
-                />
+                <img src={member.img} alt={member.name} className="w-24 h-24 rounded-full object-cover mb-4 border-2 border-orange-500" />
                 <h3 className="text-white text-lg font-semibold">{member.name}</h3>
                 <p className="text-orange-500 text-sm mb-2">{member.role}</p>
                 <p className="text-gray-400 text-sm">{member.desc}</p>
