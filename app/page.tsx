@@ -63,11 +63,11 @@ export default function Home() {
   ];
 
   const teamMembers = [
-    { name: "Имя 1", role: "Data Scientist", desc: "Описание участника 1", img: "/member1.jpg" },
-    { name: "Имя 2", role: "Business Analyst", desc: "Описание участника 2", img: "/member2.jpg" },
-    { name: "Имя 3", role: "Product Manager", desc: "Описание участника 3", img: "/member3.jpg" },
-    { name: "Имя 4", role: "Data Engineer", desc: "Описание участника 4", img: "/member4.jpg" },
-    { name: "Имя 5", role: "UX/UI Designer", desc: "Описание участника 5", img: "/member5.jpg" },
+    { name: "Имран Изатов", role: "Team Lead", desc: "Координирует весь процесс работы, распределяет задачи и гарантирует, что итоговая стратегия точно решает бизнес-кейс Mastercard", img: "/member1.jpg" },
+    { name: "Наталия Хан", role: "Data Analyst", desc: "Исследует данные для поиска инсайтов, тестирует гипотезы и обеспечивает строгую аналитическую логику решения", img: "/member2.jpg" },
+    { name: "Фахри Кубышева", role: "Tech Specialist", desc: "Отвечает за техническую реализацию — построение ML-моделей и написание сайта", img: "/member3.jpg" },
+    { name: "Амаль", role: "Presenter", desc: "Создает понятную и стильную презентацию, отвечает за структурированную подачу материала и уверенную защиту проекта перед жюри", img: "/member4.jpg" },
+    { name: "Presenter", role: "Business Thinker", desc: "Превращает аналитику в практичную бизнес-стратегию, доказывая реальную ценность и применимость решения для Mastercard", img: "/member5.jpg" },
   ];
 
   return (
