@@ -47,7 +47,7 @@ const Counter = ({ end, duration = 2000, suffix = "", prefix = "", decimals = 0 
 };
 
 export default function Home() {
-  const [scoredCard, setScoredCard] = useState(null);
+  const [scoredCard, setScoredCard] = useState<string | null>(null);
   const [expandedModel, setExpandedModel] = useState(null);
 
   const models = [
